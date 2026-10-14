@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "sesiones": {
+      "$sesion": {
+        "responses": {
+          ".read": true,
+          "$uid": {
+            ".write": true,
+            ".validate": "newData.hasChild('answers') || newData.hasChild('scales')"
+          }
+        }
+      }
+    }
+  }
+}

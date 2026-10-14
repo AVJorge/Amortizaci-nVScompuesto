@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interés compuesto y amortización alemana: aprende y participa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ts:1;
+  --paper:#F2F6F5; --surface:#FFFFFF; --ink:#10272B; --muted:#476065; --line:#D2E0DD;
+  --teal:#0E6E6E; --on-teal:#FFFFFF; --teal-soft:#DAEFEC;
+  --gold:#F2B134; --gold-soft:#FFF1CF; --on-gold:#4A3300;
+  --ok:#157544; --ok-soft:#DCF3E5; --bad:#B93428; --bad-soft:#FBE3E0;
+  --focus:#1B5FD1;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1A1C; --surface:#132528; --ink:#E8F2F0; --muted:#A3BBB8; --line:#2A4448;
+    --teal:#3DB5AC; --on-teal:#04201F; --teal-soft:#14393A;
+    --gold:#F2B134; --gold-soft:#3A2D0F; --on-gold:#F6D98E;
+    --ok:#53C98E; --ok-soft:#133A29; --bad:#F27D70; --bad-soft:#431F1A;
+    --focus:#FFD36B; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1A1C; --surface:#132528; --ink:#E8F2F0; --muted:#A3BBB8; --line:#2A4448;
+  --teal:#3DB5AC; --on-teal:#04201F; --teal-soft:#14393A;
+  --gold:#F2B134; --gold-soft:#3A2D0F; --on-gold:#F6D98E;
+  --ok:#53C98E; --ok-soft:#133A29; --bad:#F27D70; --bad-soft:#431F1A;
+  --focus:#FFD36B; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{font-size:calc(17px * var(--ts));background:var(--paper);scroll-padding-top:calc(env(safe-area-inset-top,0px) + 7.5rem)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--teal);color:var(--on-teal);padding:.6rem 1rem;z-index:50}
+.skip:focus{left:.5rem;top:.5rem}
+
+/* Barra superior */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.top-in{max-width:56rem;margin:0 auto;padding:.6rem 1rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{margin:0;font-family:var(--display);font-weight:800;font-size:1rem;color:var(--teal)}
+.size{display:flex;gap:.35rem}
+.size button{min-width:2.6rem;height:2.4rem;border:2px solid var(--line);background:var(--surface);border-radius:10px;font-weight:700}
+.size button:hover{border-color:var(--teal)}
+.tabs{max-width:56rem;margin:0 auto;padding:.5rem 1rem .6rem;display:flex;gap:.4rem;flex-wrap:wrap}
+.tabs button{border:2px solid transparent;background:transparent;padding:.5rem 1.1rem;border-radius:10px;font-weight:700;min-height:2.8rem;color:var(--muted)}
+.tabs button:hover{color:var(--ink);background:var(--teal-soft)}
+.tabs button[aria-selected="true"]{background:var(--teal);color:var(--on-teal)}
+
+main{max-width:56rem;margin:0 auto;padding:1.5rem 1rem 4rem}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.2;margin:0}
+h1{font-size:clamp(1.9rem,5.5vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,4vw,2rem);font-weight:800}
+h3{font-size:1.2rem;font-weight:600;margin:1.8rem 0 .5rem}
+h4{font-size:1.05rem;font-weight:600}
+p{margin:.6rem 0;max-width:68ch}
+.lead{font-size:1.15rem;max-width:62ch}
+.note{color:var(--muted);font-size:.95rem}
+strong{font-weight:700}
+
+/* Hero */
+.hero{padding:.5rem 0 1.5rem;border-bottom:1px solid var(--line);margin-bottom:2rem}
+#hero-art{margin:1.4rem 0 .4rem;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:.8rem .8rem .2rem}
+#hero-art svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.95rem;color:var(--muted);margin:.4rem 0 1rem}
+.legend span::before{content:"";display:inline-block;width:.9rem;height:.9rem;border-radius:3px;margin-right:.4rem;vertical-align:-.1rem;background:var(--sw)}
+.jump{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:3rem;padding:.6rem 1.3rem;border-radius:10px;border:2px solid var(--teal);background:transparent;color:var(--teal);font-weight:700}
+.btn:hover{background:var(--teal-soft)}
+.btn.primary{background:var(--teal);color:var(--on-teal)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.danger:hover{background:var(--bad-soft)}
+.link{background:none;border:0;padding:.3rem 0;color:var(--teal);text-decoration:underline;font-weight:700}
+
+/* Contenido teórico */
+.theme{margin-bottom:3rem}
+.theme>h2{padding-top:.4rem}
+.vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.7rem;margin:.8rem 0}
+.vocab div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem}
+.vocab dt{font-weight:700;color:var(--teal)}
+.vocab dd{margin:.15rem 0 0;font-size:.97rem}
+.formula{background:var(--teal);color:var(--on-teal);border-radius:14px;padding:1rem 1.3rem;margin:1rem 0;font-family:var(--display);font-weight:600;font-size:clamp(1.15rem,3.6vw,1.6rem)}
+.formula small{display:block;font-family:var(--body);font-weight:400;font-size:.95rem;margin-top:.3rem;opacity:.95}
+.formula div+div{margin-top:.4rem}
+ol.steps{padding-left:1.4rem;max-width:68ch}
+ol.steps li{margin:.5rem 0;padding-left:.2rem}
+ul.plain{padding-left:1.2rem;max-width:68ch}
+ul.plain li{margin:.4rem 0}
+.callout{border-left:6px solid var(--gold);background:var(--gold-soft);color:var(--ink);border-radius:0 12px 12px 0;padding:.8rem 1.1rem;margin:1.2rem 0;max-width:68ch}
+.callout.warn{border-left-color:var(--bad);background:var(--bad-soft)}
+.callout h4{margin-bottom:.2rem}
+.callout p,.callout ul{margin:.3rem 0}
+
+/* Herramientas */
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem;margin:1.2rem 0}
+.tool>h4{margin-bottom:.2rem}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));gap:.8rem;margin:.8rem 0}
+.fields label{display:flex;flex-direction:column;gap:.25rem;font-weight:700;font-size:.95rem}
+.fields input,.fields select{min-height:2.9rem;padding:.4rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);font-weight:400}
+.fields input:hover,.fields select:hover{border-color:var(--teal)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.7rem;margin:.9rem 0}
+.stat{background:var(--teal-soft);border-radius:10px;padding:.7rem .9rem}
+.stat span{display:block;font-size:.9rem;color:var(--muted)}
+.stat b{font-family:var(--display);font-size:1.45rem;font-weight:800}
+.calc-line{font-size:.97rem;background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:.6rem .8rem}
+.tablewrap{overflow-x:auto;margin:.8rem 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:34rem;font-variant-numeric:tabular-nums}
+th,td{padding:.55rem .7rem;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--teal-soft);font-weight:700;font-size:.92rem}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:700;background:var(--paper);border-top:2px solid var(--teal)}
+tr.sel td{background:var(--gold-soft)}
+td.barcell{min-width:7rem;width:22%}
+.stack{display:flex;height:.8rem;border-radius:99px;overflow:hidden;background:var(--line)}
+.stack i{display:block;height:100%}
+.stack .cap{background:var(--teal)}
+.stack .int{background:var(--gold)}
+.minibar{height:.8rem;border-radius:99px;background:var(--line);overflow:hidden}
+.minibar i{display:block;height:100%;background:var(--gold)}
+
+/* Cuestionario */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.3rem}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem}
+.chip{display:inline-block;background:var(--teal-soft);color:var(--teal);font-weight:700;font-size:.9rem;padding:.2rem .8rem;border-radius:99px}
+.count{color:var(--muted);font-weight:700}
+.progress{height:.55rem;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:1.3rem}
+.progress i{display:block;height:100%;background:var(--teal);transition:width .35s}
+.qtext{font-size:clamp(1.35rem,4.4vw,1.9rem);font-weight:800;margin-bottom:1.1rem;max-width:34ch}
+.opts{display:grid;gap:.7rem}
+.opt{display:flex;gap:.9rem;align-items:flex-start;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:.85rem 1rem;min-height:3.6rem;font-size:1.05rem}
+.opt:hover:not(:disabled){border-color:var(--teal);background:var(--teal-soft)}
+.opt:disabled{cursor:default;opacity:1;color:var(--ink)}
+.opt .k{flex:none;display:grid;place-items:center;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--teal-soft);color:var(--teal);font-family:var(--display);font-weight:800}
+.opt .t{flex:1;padding-top:.15rem}
+.opt .mark{flex:none;font-weight:700;font-size:.92rem;padding-top:.2rem}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.correct .mark{color:var(--ok)}
+.opt.correct .k{background:var(--ok);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .mark{color:var(--bad)}
+.opt.wrong .k{background:var(--bad);color:var(--surface)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+.sc{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.8rem .2rem;min-height:5.5rem;background:var(--surface);border:2px solid var(--line);border-radius:12px;color:var(--ink)}
+.sc b{font-family:var(--display);font-size:1.7rem}
+.sc span{font-size:.78rem;line-height:1.2;text-align:center;color:var(--muted)}
+.sc:hover:not(:disabled){border-color:var(--teal);background:var(--teal-soft)}
+.sc:disabled{cursor:default;opacity:1}
+.sc.picked{border-color:var(--teal);background:var(--teal);color:var(--on-teal)}
+.sc.picked span{color:var(--on-teal)}
+.fb{margin-top:1.1rem;border-radius:12px;padding:.8rem 1.1rem;border-left:6px solid var(--muted);background:var(--paper)}
+.fb.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.fb.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.fb p{margin:.3rem 0}
+.group{margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--line)}
+.group h3{margin:0 0 .6rem;font-size:1.1rem}
+.grow{margin:.55rem 0}
+.grow .lab{display:flex;justify-content:space-between;gap:1rem;font-size:.97rem}
+.grow .lab b{font-variant-numeric:tabular-nums}
+.bar{height:.85rem;background:var(--line);border-radius:99px;overflow:hidden;margin-top:.2rem}
+.bar i{display:block;height:100%;background:var(--muted);transition:width .5s}
+.bar.good i{background:var(--ok)}
+.bar.teal i{background:var(--teal)}
+.navrow{display:flex;justify-content:space-between;gap:.8rem;margin-top:1.4rem;flex-wrap:wrap}
+.facts{padding-left:1.2rem;max-width:62ch}
+.facts li{margin:.35rem 0}
+.score{font-family:var(--display);font-size:clamp(2.6rem,10vw,4rem);font-weight:800;color:var(--teal);line-height:1}
+.score small{font-size:1.1rem;color:var(--muted);font-weight:600}
+.topicrow{margin:.9rem 0}
+.missed{border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin:.7rem 0;background:var(--paper)}
+.missed p{margin:.25rem 0}
+
+/* Panel docente */
+.stats3{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.7rem;margin:1rem 0}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;margin:.9rem 0}
+.qcard header{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:.4rem}
+.flag{display:inline-block;background:var(--gold);color:#3A2800;font-weight:700;font-size:.88rem;padding:.15rem .7rem;border-radius:99px}
+.danger-zone{margin-top:2.5rem;border-top:1px solid var(--line);padding-top:1rem}
+
+@media (max-width:30rem){
+  .sc span{font-size:.7rem}
+  .opt{padding:.75rem .8rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<header class="top">
+  <div class="top-in">
+    <p class="brand">Matemáticas financieras</p>
+    <div class="size" role="group" aria-label="Tamaño del texto">
+      <button type="button" id="ts-down" aria-label="Reducir el tamaño del texto">A−</button>
+      <button type="button" id="ts-up" aria-label="Aumentar el tamaño del texto">A+</button>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button type="button" role="tab" id="tab-aprende" aria-controls="p-aprende" aria-selected="true" data-tab="aprende">Aprende</button>
+    <button type="button" role="tab" id="tab-participa" aria-controls="p-participa" aria-selected="false" data-tab="participa">Participa</button>
+    <button type="button" role="tab" id="tab-docente" aria-controls="p-docente" aria-selected="false" data-tab="docente" hidden>Panel docente</button>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ APRENDE ============ -->
+<section id="p-aprende" role="tabpanel" aria-labelledby="tab-aprende">
+  <div class="hero">
+    <h1>Dos ideas sobre el dinero en el tiempo</h1>
+    <p class="lead">Cuando ahorras, tu dinero crece y los intereses también ganan intereses. Cuando pagas una deuda, el saldo baja y los intereses bajan con él. Aquí repasas las dos ideas con números claros antes de contestar el cuestionario.</p>
+    <div id="hero-art" role="img" aria-label="Dos gráficas de barras. A la izquierda, un ahorro con interés compuesto: el interés, en amarillo, crece en cada periodo. A la derecha, un pago con método alemán: el abono a capital, en verde azulado, es igual en cada pago y el interés, en amarillo, disminuye."></div>
+    <div class="legend"><span style="--sw:var(--teal)">Capital</span><span style="--sw:var(--gold)">Interés</span></div>
+    <div class="jump">
+      <button type="button" class="btn" data-jump="compuesto">Interés compuesto</button>
+      <button type="button" class="btn" data-jump="aleman">Método alemán</button>
+      <button type="button" class="btn primary" data-tab-go="participa">Ir al cuestionario</button>
+    </div>
+  </div>
+
+  <!-- TEMA 1 -->
+  <article id="compuesto" class="theme">
+    <h2>Interés compuesto con capitalizaciones</h2>
+
+    <h3>La idea central</h3>
+    <p>Con el <strong>interés simple</strong>, los intereses se calculan siempre sobre el capital inicial. Con el <strong>interés compuesto</strong>, cada cierto tiempo los intereses ganados se suman al capital (a eso se le llama <strong>capitalizar</strong>) y, desde ese momento, también generan intereses. Es interés sobre interés.</p>
+
+    <h3>Vocabulario básico</h3>
+    <dl class="vocab">
+      <div><dt>Capital (C)</dt><dd>El dinero con el que empiezas.</dd></div>
+      <div><dt>Tasa nominal anual (j)</dt><dd>La tasa que se anuncia por año, por ejemplo 12% anual.</dd></div>
+      <div><dt>Capitalizaciones por año (m)</dt><dd>Cuántas veces al año se suman los intereses al capital: anual 1, semestral 2, trimestral 4, mensual 12.</dd></div>
+      <div><dt>Tasa por periodo (i)</dt><dd>La tasa que de verdad se aplica en cada periodo: i = j ÷ m.</dd></div>
+      <div><dt>Número de periodos (n)</dt><dd>Total de capitalizaciones: n = m × años.</dd></div>
+      <div><dt>Monto (M)</dt><dd>Lo que tienes al final: capital más intereses.</dd></div>
+    </dl>
+
+    <h3>La fórmula</h3>
+    <div class="formula">
+      <div>M = C × (1 + i)<sup>n</sup></div>
+      <small>donde i = j ÷ m y n = m × años</small>
+    </div>
+
+    <h3>Ejemplo resuelto</h3>
+    <p>Depositas <strong>$10,000</strong> a <strong>12% anual capitalizable mensualmente</strong> durante <strong>2 años</strong>. ¿Cuánto tendrás?</p>
+    <ol class="steps">
+      <li>Identifica los datos: C = $10,000; j = 12% anual; se capitaliza cada mes, así que m = 12; plazo de 2 años.</li>
+      <li>Calcula la tasa por periodo: i = 12% ÷ 12 = 1% mensual, es decir, 0.01.</li>
+      <li>Calcula los periodos: n = 12 × 2 = 24 meses.</li>
+      <li>Aplica la fórmula: M = 10,000 × (1.01)<sup>24</sup> = <strong>$12,697.35</strong>.</li>
+      <li>Interés ganado: 12,697.35 − 10,000 = <strong>$2,697.35</strong>.</li>
+    </ol>
+
+    <div class="tool" id="tool-comp">
+      <h4>Pruébalo tú: cambia los números</h4>
+      <p class="note">Los valores iniciales son los del ejemplo. Cambia la capitalización y observa cómo cambia el monto.</p>
+      <div class="fields">
+        <label>Capital inicial ($)<input id="c-cap" type="number" inputmode="decimal" value="10000" min="1" step="100"></label>
+        <label>Tasa nominal anual (%)<input id="c-rate" type="number" inputmode="decimal" value="12" min="0" max="100" step="0.5"></label>
+        <label>Plazo (años)<input id="c-years" type="number" inputmode="numeric" value="2" min="1" max="40" step="1"></label>
+        <label>Capitalización
+          <select id="c-freq">
+            <option value="1">Anual (1 vez al año)</option>
+            <option value="2">Semestral (2 veces)</option>
+            <option value="4">Trimestral (4 veces)</option>
+            <option value="12" selected>Mensual (12 veces)</option>
+            <option value="365">Diaria (365 veces)</option>
+          </select>
+        </label>
+      </div>
+      <div id="c-out" aria-live="polite"></div>
+    </div>
+
+    <h3>Tasa nominal y tasa efectiva</h3>
+    <p>Una tasa de 12% capitalizable mensualmente <strong>no equivale a ganar 12% al año</strong>. Como los intereses se reinvierten durante el año, el rendimiento real es mayor. Ese rendimiento real se llama <strong>tasa efectiva anual</strong>:</p>
+    <div class="formula">
+      <div>Tasa efectiva = (1 + j ÷ m)<sup>m</sup> − 1</div>
+      <small>Con j = 12% y m = 12: (1.01)<sup>12</sup> − 1 ≈ 12.68%</small>
+    </div>
+    <p>Si ahorras, una tasa efectiva más alta te conviene. Si debes, te cuesta más.</p>
+
+    <div class="callout warn">
+      <h4>Errores frecuentes</h4>
+      <ul>
+        <li>Usar 12% en cada mes, en lugar de 1% mensual (12% ÷ 12).</li>
+        <li>Mezclar unidades: si la capitalización es mensual, el plazo también se cuenta en meses (2 años = 24 meses).</li>
+        <li>Confundir el monto (el total final) con el interés (solo la ganancia).</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <h4>Para recordar</h4>
+      <p>Mientras más veces al año se capitaliza, mayor es el monto. La diferencia crece rápido al pasar de capitalización anual a mensual, y cada vez menos al pasar de mensual a diaria.</p>
+    </div>
+  </article>
+
+  <!-- TEMA 2 -->
+  <article id="aleman" class="theme">
+    <h2>Tabla de amortización: método alemán</h2>
+
+    <h3>La idea central</h3>
+    <p><strong>Amortizar</strong> es pagar una deuda por partes. Cada pago tiene dos componentes: el <strong>abono a capital</strong>, que reduce lo que debes, y el <strong>interés</strong> del periodo. El interés se calcula sobre lo que todavía se debe, llamado <strong>saldo insoluto</strong>.</p>
+    <p>En el <strong>método alemán</strong> el abono a capital es <strong>siempre el mismo</strong>. Como el saldo baja, el interés baja, y por eso la <strong>cuota total va disminuyendo</strong> con cada pago.</p>
+
+    <h3>Cómo se arma la tabla</h3>
+    <ol class="steps">
+      <li>Abono constante a capital: A = P ÷ n (préstamo entre número de pagos).</li>
+      <li>Interés del periodo: I = saldo inicial × i.</li>
+      <li>Cuota del periodo: cuota = A + I.</li>
+      <li>Saldo final: saldo inicial − A. Ese saldo es el inicial del siguiente pago. Repite hasta llegar a $0.</li>
+    </ol>
+    <div class="formula">
+      <div>Cuota = P ÷ n + saldo inicial × i</div>
+      <small>P = préstamo · n = número de pagos · i = tasa por periodo</small>
+    </div>
+
+    <h3>Ejemplo resuelto</h3>
+    <p>Un préstamo de <strong>$12,000</strong> se paga en <strong>6 pagos mensuales</strong> con <strong>1% de interés mensual</strong>, método alemán. La tabla de abajo ya está calculada: los números son editables.</p>
+
+    <div class="tool" id="tool-ger">
+      <h4>Tabla de amortización</h4>
+      <div class="fields">
+        <label>Préstamo ($)<input id="g-p" type="number" inputmode="decimal" value="12000" min="1" step="500"></label>
+        <label>Tasa por periodo (%)<input id="g-r" type="number" inputmode="decimal" value="1" min="0" max="100" step="0.1"></label>
+        <label>Número de pagos<input id="g-n" type="number" inputmode="numeric" value="6" min="1" max="60" step="1"></label>
+      </div>
+      <div id="g-out" aria-live="polite"></div>
+    </div>
+
+    <div class="callout">
+      <h4>Comparación con la cuota fija (método francés)</h4>
+      <p>En el método francés todas las cuotas son iguales: al inicio pagas menos, pero abonas poco a capital y la deuda baja despacio. En el alemán pagas más al principio, la deuda baja más rápido y se pagan menos intereses en total. Los números de tu tabla aparecen en la lectura de arriba.</p>
+    </div>
+
+    <div class="callout warn">
+      <h4>Errores frecuentes</h4>
+      <ul>
+        <li>Calcular el interés de cada mes sobre el préstamo original. Debe calcularse sobre el saldo que queda.</li>
+        <li>Pensar que la cuota es igual en todos los pagos. Lo constante es el abono a capital.</li>
+        <li>Si la tasa es anual y los pagos son mensuales, olvidar dividir la tasa entre 12.</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <h4>Para recordar</h4>
+      <p>Método alemán: <strong>abono fijo, interés decreciente, cuota decreciente.</strong> La suma de todos los abonos es igual al préstamo.</p>
+    </div>
+
+    <p style="margin-top:2rem"><button type="button" class="btn primary" data-tab-go="participa">Ya repasé: ir al cuestionario</button></p>
+  </article>
+</section>
+
+<!-- ============ PARTICIPA ============ -->
+<section id="p-participa" role="tabpanel" aria-labelledby="tab-participa" hidden></section>
+
+<!-- ============ DOCENTE ============ -->
+<section id="p-docente" role="tabpanel" aria-labelledby="tab-docente" hidden></section>
+
+</main>
+
+<script src="config.js"></script>
+<script>
+/* Capa de compatibilidad para GitHub Pages.
+   Dentro de Claude no se activa (window.claude ya existe).
+   Fuera de Claude emula "user" y "db" con Firebase Realtime Database vía REST. */
+(function(){
+  'use strict';
+  if(window.claude) return;
+  const cfg=window.SESION_CONFIG||{};
+  const base=String(cfg.databaseURL||'').trim().replace(/\/+$/,'');
+  const hasDb=/^https:\/\/[^\s]+$/.test(base);
+  const ses=encodeURIComponent(String(cfg.sesion||'grupo-1').replace(/[^\w-]/g,'-'));
+  const root=base+'/sesiones/'+ses+'/responses';
+
+  function getUid(){
+    try{
+      let u=localStorage.getItem('amort-uid');
+      if(!u){
+        u=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+Math.random().toString(36).slice(2)).replace(/[^\w-]/g,'');
+        localStorage.setItem('amort-uid',u);
+      }
+      return u;
+    }catch(e){return null;}
+  }
+  const uid=getUid();
+
+  const teacherP=(async function(){
+    try{
+      const key=new URLSearchParams(location.search).get('docente');
+      const want=String(cfg.claveDocenteSHA256||'').toLowerCase();
+      if(!key||!want||!window.crypto||!crypto.subtle) return false;
+      const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
+      const hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+      return hex===want;
+    }catch(e){return false;}
+  })();
+
+  const user={
+    isOwner:()=>teacherP,
+    canEdit:()=>teacherP,
+    id:async()=>uid,
+    can:async()=>hasDb&&!!uid
+  };
+
+  const listeners=new Set();
+  let lastJson=null;
+  function snapFrom(val){
+    const ids=(val&&typeof val==='object')?Object.keys(val):[];
+    const docs=ids.map(id=>({id:id,exists:true,data:()=>val[id]}));
+    return {docs:docs,size:docs.length,empty:docs.length===0};
+  }
+  async function fetchAll(){
+    const r=await fetch(root+'.json',{cache:'no-store'});
+    if(!r.ok) throw {code:'unavailable',message:'HTTP '+r.status};
+    return r.json();
+  }
+  async function poll(force){
+    if(!listeners.size||document.hidden) return;
+    try{
+      const v=await fetchAll(), s=JSON.stringify(v);
+      if(force||s!==lastJson){lastJson=s;listeners.forEach(l=>{try{l.next(snapFrom(v));}catch(e){}});}
+    }catch(e){/* se reintenta en el siguiente ciclo */}
+  }
+  setInterval(()=>poll(false),4000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden) poll(true);});
+
+  async function write(id,method,body){
+    const r=await fetch(root+'/'+encodeURIComponent(id)+'.json',{
+      method:method,headers:{'Content-Type':'application/json'},body:body
+    });
+    if(!r.ok) throw {code:'invalid_argument',message:'HTTP '+r.status};
+    poll(true);
+  }
+  const db={
+    collection:function(){
+      return {
+        onSnapshot:function(next,error){
+          const l={next:next,error:error};
+          listeners.add(l);poll(true);
+          return function(){listeners.delete(l);};
+        },
+        get:async function(){return snapFrom(await fetchAll());},
+        doc:function(id){
+          return {
+            id:id,
+            set:function(data){return write(id,'PUT',JSON.stringify(data));},
+            delete:function(){return write(id,'DELETE');}
+          };
+        }
+      };
+    }
+  };
+
+  window.claude={use:async function(name){
+    if(name==='user') return user;
+    if(name==='db') return hasDb?db:null;
+    return null;
+  }};
+})();
+</script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- utilidades ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>Number(n).toLocaleString('es-MX',{style:'currency',currency:'MXN'});
+const num=(n,d=2)=>Number(n).toLocaleString('es-MX',{minimumFractionDigits:d,maximumFractionDigits:d});
+const clamp=(v,a,b)=>isNaN(v)?NaN:Math.min(b,Math.max(a,v));
+const r2=n=>Math.round((n+Number.EPSILON)*100)/100;
+const reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- contenido del cuestionario ---------- */
+const TOPICS={
+  compuesto:{name:'Interés compuesto con capitalizaciones',anchor:'compuesto'},
+  aleman:{name:'Amortización: método alemán',anchor:'aleman'}
+};
+const Q=[
+ {id:'q1',topic:'compuesto',text:'¿Qué significa que el interés sea “compuesto”?',
+  opts:['Los intereses se calculan siempre sobre el capital inicial.','Los intereses ganados se suman al capital y también generan nuevos intereses.','La tasa de interés cambia cada mes.','El interés se paga una sola vez, al final, sin importar el tiempo.'],
+  correct:1,explain:'En el interés compuesto los intereses se capitalizan: pasan a formar parte del capital y en el siguiente periodo también ganan intereses. La primera opción describe el interés simple.'},
+ {id:'q2',topic:'compuesto',text:'Una tasa de 12% anual capitalizable mensualmente equivale a una tasa por periodo de…',
+  opts:['12%','6%','1%','0.1%'],
+  correct:2,explain:'Tasa por periodo: i = j ÷ m = 12% ÷ 12 = 1% mensual.'},
+ {id:'q3',topic:'compuesto',text:'Inviertes $1,000 al 10% anual con capitalización anual durante 2 años. ¿Cuál es el monto final?',
+  opts:['$1,200','$1,210','$1,100','$1,020'],
+  correct:1,explain:'M = 1,000 × (1.10)<sup>2</sup> = $1,210. En el segundo año el interés se calcula sobre $1,100, no sobre $1,000: ganas $110 y no $100. Los $1,200 serían con interés simple.'},
+ {id:'q4',topic:'compuesto',text:'Mismo capital, misma tasa nominal y mismo plazo. ¿Con cuál capitalización obtienes MÁS dinero?',
+  opts:['Anual','Semestral','Trimestral','Mensual'],
+  correct:3,explain:'Mientras más veces al año se capitalizan los intereses, antes empiezan a generar nuevos intereses. Con $10,000, 12% nominal y 2 años: anual $12,544.00; semestral $12,624.77; trimestral $12,667.70; mensual $12,697.35.'},
+ {id:'q5',topic:'compuesto',text:'Una tasa nominal de 12% capitalizable mensualmente produce una tasa efectiva anual…',
+  opts:['Mayor que 12% (cerca de 12.68%)','Igual a 12%','Menor que 12%','Igual a 1%'],
+  correct:0,explain:'Los intereses se reinvierten durante el año: (1.01)<sup>12</sup> − 1 ≈ 12.68%. Cuando hay más de una capitalización al año, la tasa efectiva es mayor que la nominal.'},
+ {id:'q6',topic:'aleman',text:'En el método alemán, ¿qué permanece CONSTANTE en cada pago?',
+  opts:['La cuota total','El interés','El saldo de la deuda','El abono a capital'],
+  correct:3,explain:'El abono a capital es fijo: A = P ÷ n. El interés y la cuota cambian porque dependen del saldo.'},
+ {id:'q7',topic:'aleman',text:'Un préstamo de $12,000 se paga en 6 pagos mensuales con el método alemán. ¿Cuánto se abona al capital en cada pago?',
+  opts:['$1,200','$2,000','$2,120','$6,000'],
+  correct:1,explain:'A = P ÷ n = 12,000 ÷ 6 = $2,000 en cada pago. Los $2,120 son la primera cuota completa (abono más interés), no el abono.'},
+ {id:'q8',topic:'aleman',text:'Con ese préstamo y 1% de interés mensual, ¿cuánto es el interés del SEGUNDO pago?',
+  opts:['$120','$200','$100','$80'],
+  correct:2,explain:'Después del primer pago el saldo es 12,000 − 2,000 = $10,000. Interés = 10,000 × 1% = $100. Los $120 corresponden al primer pago.'},
+ {id:'q9',topic:'aleman',text:'¿Por qué la cuota total va bajando de un pago a otro?',
+  opts:['Porque el abono a capital disminuye.','Porque el interés se calcula sobre un saldo cada vez menor.','Porque el banco reduce la tasa.','Porque cada vez se pagan menos meses.'],
+  correct:1,explain:'Cada pago reduce el saldo, así que el interés siguiente es menor. Como el abono es fijo, la cuota (abono más interés) baja. En el ejemplo baja $20 cada mes.'},
+ {id:'q10',topic:'aleman',text:'Comparado con un crédito de cuota fija, una característica del método alemán es que…',
+  opts:['Las primeras cuotas son más altas.','Las últimas cuotas son más altas.','La deuda nunca llega a cero.','Todos los pagos son iguales.'],
+  correct:0,explain:'Pagas más al inicio, pero la deuda baja más rápido y, normalmente, se pagan menos intereses totales. Las cuotas finales son las más pequeñas.'}
+];
+const S=[
+ {id:'s1',topic:'compuesto',text:'Interés compuesto con capitalizaciones: ¿qué tan claro te quedó el tema?'},
+ {id:'s2',topic:'aleman',text:'Tabla de amortización con método alemán: ¿qué tan claro te quedó el tema?'}
+];
+const SCALE_LABELS=['Nada claro','Poco claro','Más o menos','Bastante claro','Totalmente claro'];
+const ITEMS=[...Q.map(q=>Object.assign({kind:'q'},q)),...S.map(s=>Object.assign({kind:'s'},s))];
+const LETTERS='ABCD';
+
+/* ---------- estado ---------- */
+const LS='amort-sesion-v1', LS_SIZE='amort-size-v1';
+const state={
+  tab:'aprende', stage:'start', idx:0,
+  answers:{}, scales:{},
+  uid:null, db:null, canWrite:null, isTeacher:false, isOwner:false,
+  agg:null, resetStep:0, hydrated:false
+};
+(function loadLocal(){
+  try{
+    const raw=localStorage.getItem(LS);
+    if(raw){const d=JSON.parse(raw); if(d&&typeof d==='object'){state.answers=d.answers||{};state.scales=d.scales||{};}}
+  }catch(e){}
+})();
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify({answers:state.answers,scales:state.scales}))}catch(e){}}
+
+/* ---------- tamaño del texto ---------- */
+const SIZES=[1,1.12,1.25,1.4]; let sizeIdx=0;
+try{const s=parseInt(localStorage.getItem(LS_SIZE),10); if(s>=0&&s<SIZES.length) sizeIdx=s;}catch(e){}
+function applySize(){document.documentElement.style.setProperty('--ts',SIZES[sizeIdx]);try{localStorage.setItem(LS_SIZE,String(sizeIdx))}catch(e){}}
+applySize();
+$('#ts-up').addEventListener('click',()=>{sizeIdx=Math.min(SIZES.length-1,sizeIdx+1);applySize();});
+$('#ts-down').addEventListener('click',()=>{sizeIdx=Math.max(0,sizeIdx-1);applySize();});
+
+/* ---------- ilustración de portada ---------- */
+(function heroArt(){
+  const cap=34,k=1.15,base=150,bw=38,gap=14;
+  const left=[0,8,19,33,50,72], right=[42,35,28,21,14,7];
+  const bars=(x0,ints)=>ints.map((it,i)=>{
+    const x=x0+i*(bw+gap),hc=cap*k,hi=it*k;
+    return `<rect x="${x}" y="${base-hc}" width="${bw}" height="${hc}" rx="3" fill="var(--teal)"/>`+
+      (hi?`<rect x="${x}" y="${base-hc-hi}" width="${bw}" height="${hi}" rx="3" fill="var(--gold)"/>`:'');
+  }).join('');
+  const txt=(x,t)=>`<text x="${x}" y="188" font-size="16" font-weight="700" style="fill:var(--ink);font-family:var(--body)">${t}</text>`;
+  $('#hero-art').innerHTML=`<svg viewBox="0 0 660 200" aria-hidden="true" focusable="false">
+    <line x1="8" y1="154" x2="316" y2="154" style="stroke:var(--line)" stroke-width="2"/>
+    <line x1="346" y1="154" x2="654" y2="154" style="stroke:var(--line)" stroke-width="2"/>
+    ${bars(12,left)}${bars(350,right)}
+    ${txt(12,'Ahorro: el interés crece')}${txt(350,'Deuda: el interés baja')}
+  </svg>`;
+})();
+
+/* ---------- calculadora: interés compuesto ---------- */
+const FREQ=[[1,'Anual'],[2,'Semestral'],[4,'Trimestral'],[12,'Mensual'],[365,'Diaria']];
+function calcCompound(){
+  const out=$('#c-out');
+  const C=clamp(parseFloat($('#c-cap').value),0,1e9);
+  const j=clamp(parseFloat($('#c-rate').value),0,100);
+  const t=clamp(parseFloat($('#c-years').value),0,60);
+  const m=parseInt($('#c-freq').value,10);
+  if([C,j,t].some(isNaN)){out.innerHTML='<p class="note">Escribe un número en cada campo para ver el resultado.</p>';return;}
+  const i=j/100/m, n=m*t, M=C*Math.pow(1+i,n), tea=Math.pow(1+i,m)-1;
+  const perPct=(j/m);
+  const rows=[['Interés simple',C*(1+j/100*t),false]].concat(FREQ.map(f=>[f[1],C*Math.pow(1+j/100/f[0],f[0]*t),f[0]===m]));
+  const maxInt=Math.max(...rows.map(r=>r[1]-C),0.0001);
+  out.innerHTML=`
+    <div class="stats">
+      <div class="stat"><span>Monto final</span><b>${money(M)}</b></div>
+      <div class="stat"><span>Intereses ganados</span><b>${money(M-C)}</b></div>
+      <div class="stat"><span>Tasa efectiva anual</span><b>${num(tea*100,2)}%</b></div>
+    </div>
+    <p class="calc-line">Tasa por periodo: i = ${num(j,2)}% ÷ ${m} = ${num(perPct,perPct<0.1?4:2)}% &nbsp;|&nbsp; Periodos: n = ${m} × ${num(t,t%1?1:0)} = ${num(n,n%1?2:0)} &nbsp;|&nbsp; M = ${money(C)} × (1 + ${num(i,6)})<sup>${num(n,n%1?2:0)}</sup></p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Forma de calcular</th><th>Monto final</th><th>Intereses</th><th aria-label="Comparación"></th></tr></thead>
+      <tbody>${rows.map(r=>`<tr class="${r[2]?'sel':''}"><td>${r[0]}${r[2]?' (la que elegiste)':''}</td><td>${money(r[1])}</td><td>${money(r[1]-C)}</td><td class="barcell"><div class="minibar"><i style="width:${Math.max(0,(r[1]-C)/maxInt*100)}%"></i></div></td></tr>`).join('')}</tbody>
+    </table></div>`;
+}
+['c-cap','c-rate','c-years','c-freq'].forEach(id=>{$('#'+id).addEventListener('input',calcCompound);$('#'+id).addEventListener('change',calcCompound);});
+calcCompound();
+
+/* ---------- calculadora: método alemán ---------- */
+function calcGerman(){
+  const out=$('#g-out');
+  const P=clamp(parseFloat($('#g-p').value),0,1e9);
+  const rp=clamp(parseFloat($('#g-r').value),0,100);
+  const nraw=clamp(parseFloat($('#g-n').value),1,60);
+  if([P,rp,nraw].some(isNaN)||P<=0){out.innerHTML='<p class="note">Escribe un número en cada campo para ver la tabla.</p>';return;}
+  const n=Math.round(nraw), i=rp/100, A0=r2(P/n);
+  let saldo=P,totI=0,totA=0,totC=0;const rows=[];
+  for(let k=1;k<=n;k++){
+    const I=r2(saldo*i), A=(k===n)?r2(saldo):A0, cuota=r2(A+I), fin=r2(saldo-A);
+    rows.push({k,saldo,I,A,cuota,fin});
+    totI+=I;totA+=A;totC+=cuota;saldo=fin;
+  }
+  totI=r2(totI);totA=r2(totA);totC=r2(totC);
+  const maxC=rows[0].cuota||1, first=rows[0], last=rows[rows.length-1];
+  const fixed=i>0?P*i/(1-Math.pow(1+i,-n)):P/n, fixedInt=fixed*n-P;
+  const notes=[
+    `El abono a capital es de ${money(A0)} en cada pago (${money(P)} ÷ ${n}).`,
+    n>1?`La cuota baja cerca de ${money(A0*i)} en cada pago (abono × tasa): pasa de ${money(first.cuota)} a ${money(last.cuota)}.`:'',
+    `Intereses totales: ${money(totI)}. Total pagado: ${money(totC)}.`,
+    `La suma de los abonos es ${money(totA)}, igual al préstamo, y el saldo final es ${money(last.fin)}.`,
+    `Con cuota fija (método francés) pagarías ${money(fixed)} cada vez y ${money(fixedInt)} de intereses totales.`
+  ].filter(Boolean);
+  out.innerHTML=`
+    <div class="tablewrap"><table>
+      <thead><tr><th>Pago</th><th>Saldo inicial</th><th>Interés</th><th>Abono a capital</th><th>Cuota</th><th>Saldo final</th><th aria-label="Composición de la cuota">Composición</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td>${r.k}</td><td>${money(r.saldo)}</td><td>${money(r.I)}</td><td>${money(r.A)}</td><td><strong>${money(r.cuota)}</strong></td><td>${money(r.fin)}</td><td class="barcell"><div class="stack" style="width:${r.cuota/maxC*100}%"><i class="cap" style="width:${r.A/r.cuota*100}%"></i><i class="int" style="width:${r.I/r.cuota*100}%"></i></div></td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>Totales</td><td></td><td>${money(totI)}</td><td>${money(totA)}</td><td>${money(totC)}</td><td></td><td></td></tr></tfoot>
+    </table></div>
+    <div class="legend"><span style="--sw:var(--teal)">Abono a capital</span><span style="--sw:var(--gold)">Interés</span></div>
+    <h4 style="margin-top:.8rem">Lectura de la tabla</h4>
+    <ul class="plain">${notes.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+}
+['g-p','g-r','g-n'].forEach(id=>{$('#'+id).addEventListener('input',calcGerman);});
+calcGerman();
+
+/* ---------- agregación de resultados del grupo ---------- */
+function aggregate(docs){
+  const a={n:docs.length,done:0,q:{},s:{},scores:[],topic:{compuesto:[0,0],aleman:[0,0]}};
+  Q.forEach(q=>{a.q[q.id]=Array(q.opts.length).fill(0);});
+  S.forEach(s=>{a.s[s.id]=Array(5).fill(0);});
+  docs.forEach(d=>{
+    const x=(d.data&&d.data())||{}, ans=x.answers||{}, sc=x.scales||{};
+    let score=0,answered=0;
+    Q.forEach(q=>{
+      const v=ans[q.id];
+      if(Number.isInteger(v)&&v>=0&&v<q.opts.length){
+        a.q[q.id][v]++;answered++;a.topic[q.topic][1]++;
+        if(v===q.correct){score++;a.topic[q.topic][0]++;}
+      }
+    });
+    S.forEach(s=>{const v=sc[s.id]; if(Number.isInteger(v)&&v>=1&&v<=5) a.s[s.id][v-1]++;});
+    if(answered===Q.length) a.done++;
+    a.scores.push(score);
+  });
+  return a;
+}
+
+/* ---------- sincronización ---------- */
+let chain=Promise.resolve();
+function saveRemote(){
+  if(!state.db||!state.uid||state.canWrite===false) return;
+  const payload={answers:Object.assign({},state.answers),scales:Object.assign({},state.scales),v:1};
+  chain=chain.then(()=>state.db.collection('responses').doc(state.uid).set(payload)).catch(e=>{
+    if(e&&(e.code==='invalid_argument'||e.code==='revoked'||e.code==='not_granted')){state.canWrite=false;refreshLive();}
+  });
+}
+function deleteRemote(){
+  if(!state.db||!state.uid||state.canWrite===false) return;
+  chain=chain.then(()=>state.db.collection('responses').doc(state.uid).delete()).catch(()=>{});
+}
+function hydrate(snap){
+  if(state.hydrated) return; state.hydrated=true;
+  if(!state.uid) return;
+  const mine=snap.docs.find(d=>d.id===state.uid);
+  const hasLocal=Object.keys(state.answers).length>0;
+  if(mine&&!hasLocal){
+    const x=mine.data()||{};
+    if(x.answers&&typeof x.answers==='object') state.answers=x.answers;
+    if(x.scales&&typeof x.scales==='object') state.scales=x.scales;
+    saveLocal();
+    if(state.tab==='participa') renderQuiz();
+  } else if(!mine&&hasLocal){
+    saveRemote();
+  }
+}
+async function initCaps(){
+  try{
+    const c=window.claude; if(!c||typeof c.use!=='function') return;
+    const user=await c.use('user');
+    if(user){
+      state.isTeacher=await user.canEdit();
+      state.isOwner=await user.isOwner();
+      if(typeof user.id==='function') state.uid=await user.id();
+      if(typeof user.can==='function') state.canWrite=await user.can('data.write');
+      if(state.isTeacher) $('#tab-docente').hidden=false;
+    }
+    const db=await c.use('db');
+    if(!db){refreshLive();return;}
+    state.db=db;
+    db.collection('responses').onSnapshot(snap=>{
+      state.agg=aggregate(snap.docs);
+      hydrate(snap);
+      refreshLive();
+    },err=>{state.aggErr=err&&err.code;refreshLive();});
+    refreshLive();
+  }catch(e){}
+}
+
+/* ---------- vistas de grupo ---------- */
+const plural=n=>n===1?'1 persona':`${n} personas`;
+function statusText(){
+  if(!state.db) return 'Modo individual: verás tus aciertos y explicaciones. Los resultados del grupo no están disponibles en esta vista.';
+  if(state.canWrite===false) return 'Puedes ver los resultados del grupo, pero esta cuenta no puede enviar respuestas: se guardan solo en este dispositivo.';
+  return `Resultados del grupo en vivo: ${plural(state.agg?state.agg.n:0)} han participado.`;
+}
+function groupHTML(item){
+  const a=state.agg;
+  if(!a||!a.n){
+    return `<div class="group"><h3>Respuestas del grupo</h3><p class="note">${state.db?'Aún no hay respuestas del grupo.':'Los resultados del grupo no están disponibles en esta vista.'}</p></div>`;
+  }
+  if(item.kind==='q'){
+    const counts=a.q[item.id], tot=counts.reduce((x,y)=>x+y,0);
+    return `<div class="group"><h3>Así respondió el grupo (${plural(tot)})</h3>`+
+      item.opts.map((o,i)=>{
+        const p=tot?Math.round(counts[i]/tot*100):0;
+        return `<div class="grow"><div class="lab"><span>${LETTERS[i]}. ${esc(o)}${i===item.correct?' ✓':''}</span><b>${p}%</b></div><div class="bar ${i===item.correct?'good':''}"><i style="width:${p}%"></i></div></div>`;
+      }).join('')+`</div>`;
+  }
+  const counts=a.s[item.id], tot=counts.reduce((x,y)=>x+y,0);
+  const avg=tot?counts.reduce((s,c,i)=>s+c*(i+1),0)/tot:0;
+  return `<div class="group"><h3>Así respondió el grupo (${plural(tot)})</h3>`+
+    (tot?`<p>Promedio: <strong>${num(avg,1)}</strong> de 5</p>`:'')+
+    counts.map((c,i)=>{
+      const p=tot?Math.round(c/tot*100):0;
+      return `<div class="grow"><div class="lab"><span>${i+1}. ${SCALE_LABELS[i]}</span><b>${p}%</b></div><div class="bar teal"><i style="width:${p}%"></i></div></div>`;
+    }).join('')+`</div>`;
+}
+function refreshLive(){
+  const ls=$('#live-status'); if(ls) ls.textContent=statusText();
+  const slot=$('#group-slot');
+  if(slot&&state.stage==='q'){const item=ITEMS[state.idx]; slot.innerHTML=isAnswered(item)?groupHTML(item):'';}
+  if(state.tab==='docente') renderTeacher();
+}
+
+/* ---------- cuestionario ---------- */
+function isAnswered(item){return item.kind==='q'?state.answers[item.id]!==undefined:state.scales[item.id]!==undefined;}
+function firstUnanswered(){return ITEMS.findIndex(it=>!isAnswered(it));}
+function renderQuiz(){
+  const root=$('#p-participa');
+  root.innerHTML=state.stage==='start'?startHTML():state.stage==='q'?questionHTML():resultHTML();
+}
+function startHTML(){
+  const done=ITEMS.filter(isAnswered).length;
+  const label=done===0?'Comenzar':done===ITEMS.length?'Ver mi resultado':'Continuar';
+  return `<div class="card">
+    <h1>Cuestionario de la sesión</h1>
+    <p class="lead">Son 10 preguntas de opción múltiple y 2 de autoevaluación. Al contestar verás si acertaste, por qué, y cómo respondió el grupo.</p>
+    <ul class="facts">
+      <li>No es un examen: sirve para saber qué conviene repasar.</li>
+      <li>Puedes volver a la pestaña <strong>Aprende</strong> cuando quieras.</li>
+      <li>Las respuestas del grupo se muestran sin nombres.</li>
+    </ul>
+    <p class="note" id="live-status">${esc(statusText())}</p>
+    <p style="margin-top:1.2rem"><button type="button" class="btn primary" data-act="start">${label}</button></p>
+  </div>`;
+}
+function questionHTML(){
+  const item=ITEMS[state.idx], total=ITEMS.length, done=isAnswered(item);
+  let body='';
+  if(item.kind==='q'){
+    const sel=state.answers[item.id];
+    body=`<div class="opts" role="group" aria-label="Opciones de respuesta">`+item.opts.map((o,i)=>{
+      let cls='opt',mark='';
+      if(done){
+        if(i===item.correct){cls+=' correct';mark='<span class="mark">✓ Correcta</span>';}
+        else if(i===sel){cls+=' wrong';mark='<span class="mark">✕ Tu respuesta</span>';}
+      }
+      return `<button type="button" class="${cls}" data-opt="${i}" ${done?'disabled':''}><span class="k">${LETTERS[i]}</span><span class="t">${esc(o)}</span>${mark}</button>`;
+    }).join('')+`</div>`;
+    if(done){
+      const ok=sel===item.correct;
+      body+=`<div class="fb ${ok?'ok':'bad'}" role="status"><strong>${ok?'✓ ¡Correcto!':'✕ No es esa. Veamos por qué.'}</strong><p>${item.explain}</p>${ok?'':`<button type="button" class="link" data-review="${item.topic}">Repasar: ${esc(TOPICS[item.topic].name)}</button>`}</div>`;
+    }
+  }else{
+    body=`<div class="scale" role="group" aria-label="De 1 (nada claro) a 5 (totalmente claro)">`+[1,2,3,4,5].map(v=>
+      `<button type="button" class="sc${done&&state.scales[item.id]===v?' picked':''}" data-scale="${v}" ${done?'disabled':''}><b>${v}</b><span>${SCALE_LABELS[v-1]}</span></button>`).join('')+`</div>`;
+    if(done) body+=`<div class="fb" role="status"><strong>Gracias por responder.</strong><p>Tu respuesta ayuda a ver qué conviene reforzar en clase.</p></div>`;
+  }
+  const last=state.idx===total-1;
+  return `<div class="card">
+    <div class="qhead"><span class="chip">${item.kind==='q'?esc(TOPICS[item.topic].name):'Autoevaluación'}</span><span class="count">${state.idx+1} de ${total}</span></div>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${state.idx+1}" aria-label="Avance del cuestionario"><i style="width:${(state.idx+1)/total*100}%"></i></div>
+    <h2 class="qtext">${esc(item.text)}</h2>
+    ${body}
+    <div id="group-slot">${done?groupHTML(item):''}</div>
+    <div class="navrow">
+      <button type="button" class="btn" data-act="prev" ${state.idx===0?'disabled':''}>Anterior</button>
+      <button type="button" class="btn primary" id="btn-next" data-act="next" ${done?'':'disabled'}>${last?'Ver mi resultado':'Siguiente'}</button>
+    </div>
+  </div>`;
+}
+function resultHTML(){
+  let score=0;const byTopic={compuesto:[0,0],aleman:[0,0]},missed=[];
+  Q.forEach((q,i)=>{
+    const v=state.answers[q.id];byTopic[q.topic][1]++;
+    if(v===q.correct){score++;byTopic[q.topic][0]++;}else missed.push({q,i,v});
+  });
+  const msg=score>=9?'Dominas los dos temas. Estás listo para pasar a ejercicios más largos.':
+            score>=7?'Vas muy bien. Revisa las preguntas que fallaste para afinar los detalles.':
+            score>=5?'Tienes una base sólida, pero conviene repasar algunos puntos.':
+            'Aún hay conceptos por reforzar, y para eso sirve este ejercicio. Repasa la teoría y pregunta en clase lo que no quedó claro.';
+  const insights=[];
+  S.forEach(s=>{
+    const v=state.scales[s.id],t=byTopic[s.topic];if(v===undefined) return;
+    const nm=TOPICS[s.topic].name;
+    if(v>=4&&t[0]<=2) insights.push(`Te sentías con confianza en “${nm}”, pero el resultado fue bajo (${t[0]} de ${t[1]}). Vale la pena repasarlo.`);
+    else if(v<=2&&t[0]>=4) insights.push(`Sabes más de lo que crees en “${nm}”: acertaste ${t[0]} de ${t[1]}.`);
+  });
+  return `<div class="card">
+    <h1>Tu resultado</h1>
+    <p class="score">${score}<small> de ${Q.length} correctas</small></p>
+    <p class="lead">${msg}</p>
+    ${Object.keys(byTopic).map(t=>`<div class="topicrow"><div class="grow"><div class="lab"><span>${esc(TOPICS[t].name)}</span><b>${byTopic[t][0]} de ${byTopic[t][1]}</b></div><div class="bar teal"><i style="width:${byTopic[t][0]/byTopic[t][1]*100}%"></i></div></div></div>`).join('')}
+    ${insights.length?`<div class="callout"><h4>Para tomar en cuenta</h4>${insights.map(x=>`<p>${esc(x)}</p>`).join('')}</div>`:''}
+    ${missed.length?`<h3>Preguntas para repasar</h3>`+missed.map(m=>`<div class="missed"><p><strong>Pregunta ${m.i+1}.</strong> ${esc(m.q.text)}</p><p>Tu respuesta: ${m.v===undefined?'sin responder':esc(m.q.opts[m.v])}</p><p>Respuesta correcta: <strong>${esc(m.q.opts[m.q.correct])}</strong></p><p>${m.q.explain}</p><button type="button" class="link" data-review="${m.q.topic}">Repasar: ${esc(TOPICS[m.q.topic].name)}</button></div>`).join(''):`<div class="callout"><h4>Sin errores</h4><p>Respondiste todo correctamente.</p></div>`}
+    <p class="note" id="live-status">${esc(statusText())}</p>
+    <div class="navrow">
+      <button type="button" class="btn" data-act="review-all">Revisar mis respuestas</button>
+      <button type="button" class="btn" data-act="again">Volver a empezar</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- panel docente ---------- */
+function renderTeacher(){
+  const root=$('#p-docente');
+  if(!state.isTeacher){root.innerHTML='';return;}
+  if(!state.db){
+    root.innerHTML=`<h1>Panel del docente</h1><p class="lead">Los resultados del grupo no están activos. Revisa que <strong>config.js</strong> tenga la dirección de tu base de datos de Firebase (consulta el README).</p>`;
+    return;
+  }
+  const a=state.agg||aggregate([]);
+  const avg=a.n?a.scores.reduce((x,y)=>x+y,0)/a.n:0;
+  const topicBars=Object.keys(TOPICS).map(t=>{
+    const [ok,tot]=a.topic[t],p=tot?Math.round(ok/tot*100):0;
+    return `<div class="grow"><div class="lab"><span>${esc(TOPICS[t].name)}</span><b>${tot?p+'% de aciertos':'sin datos'}</b></div><div class="bar teal"><i style="width:${p}%"></i></div></div>`;
+  }).join('');
+  const qcards=Q.map((q,i)=>{
+    const counts=a.q[q.id],tot=counts.reduce((x,y)=>x+y,0),p=tot?Math.round(counts[q.correct]/tot*100):0;
+    return `<article class="qcard"><header><span class="chip">Pregunta ${i+1} · ${esc(TOPICS[q.topic].name)}</span><span><strong>${tot?p+'% acertó':'sin respuestas'}</strong> ${tot>=3&&p<60?'<span class="flag">Conviene reforzar</span>':''}</span></header>
+      <h4>${esc(q.text)}</h4>
+      ${q.opts.map((o,k)=>{const pp=tot?Math.round(counts[k]/tot*100):0;return `<div class="grow"><div class="lab"><span>${LETTERS[k]}. ${esc(o)}${k===q.correct?' ✓':''}</span><b>${pp}%</b></div><div class="bar ${k===q.correct?'good':''}"><i style="width:${pp}%"></i></div></div>`;}).join('')}
+    </article>`;
+  }).join('');
+  const scales=S.map(s=>`<article class="qcard"><h4>${esc(s.text)}</h4>${groupHTML(Object.assign({kind:'s'},s)).replace(/<h3>.*?<\/h3>/,'')}</article>`).join('');
+  const resetUI=state.isOwner?`<div class="danger-zone"><h3 style="margin-top:0">Reiniciar la sesión</h3>
+    <p class="note">Borra las respuestas de todo el grupo para empezar con una clase nueva. Tus propias respuestas de prueba también cuentan como participante.</p>
+    ${state.resetStep===0?`<button type="button" class="btn danger" data-act="reset1">Borrar respuestas del grupo</button>`:
+      state.resetStep===1?`<p><strong>Esto no se puede deshacer.</strong></p><button type="button" class="btn danger" data-act="reset2">Sí, borrar todo</button> <button type="button" class="btn" data-act="reset0">Cancelar</button>`:
+      `<p>Borrando…</p>`}
+  </div>`:'';
+  root.innerHTML=`<h1>Panel del docente</h1>
+    <p class="note">Resultados anónimos y en tiempo real. Se actualizan solos cuando alguien responde.</p>
+    <div class="stats3">
+      <div class="stat"><span>Participantes</span><b>${a.n}</b></div>
+      <div class="stat"><span>Terminaron las 10 preguntas</span><b>${a.done}</b></div>
+      <div class="stat"><span>Promedio de aciertos</span><b>${a.n?num(avg,1):'—'} de ${Q.length}</b></div>
+    </div>
+    <h3>Aciertos por tema</h3>${topicBars}
+    <h3>Resultados por pregunta</h3>${qcards}
+    <h3>Autoevaluación</h3>${scales}
+    ${resetUI}`;
+}
+async function doReset(){
+  state.resetStep=2;renderTeacher();
+  try{
+    const snap=await state.db.collection('responses').get();
+    for(const d of snap.docs){await state.db.collection('responses').doc(d.id).delete();}
+  }catch(e){}
+  state.resetStep=0;renderTeacher();
+}
+
+/* ---------- navegación ---------- */
+function showTab(t){
+  if(t==='docente'&&!state.isTeacher) t='aprende';
+  state.tab=t;
+  ['aprende','participa','docente'].forEach(n=>{
+    const on=n===t;$('#p-'+n).hidden=!on;$('#tab-'+n).setAttribute('aria-selected',on?'true':'false');
+  });
+  if(t==='participa') renderQuiz();
+  if(t==='docente') renderTeacher();
+  window.scrollTo(0,0);
+}
+function jumpTo(id){
+  const el=document.getElementById(id);if(el) el.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+}
+function focusNext(){const b=$('#btn-next');if(b&&!b.disabled) b.focus({preventScroll:true});}
+
+document.addEventListener('click',ev=>{
+  const t=ev.target.closest('button');if(!t) return;
+  if(t.dataset.tab){showTab(t.dataset.tab);return;}
+  if(t.dataset.tabGo){showTab(t.dataset.tabGo);return;}
+  if(t.dataset.jump){jumpTo(t.dataset.jump);return;}
+  if(t.dataset.review){showTab('aprende');setTimeout(()=>jumpTo(TOPICS[t.dataset.review].anchor),30);return;}
+  if(t.dataset.opt!==undefined){
+    const item=ITEMS[state.idx];if(!item||item.kind!=='q'||isAnswered(item)) return;
+    state.answers[item.id]=parseInt(t.dataset.opt,10);saveLocal();saveRemote();renderQuiz();focusNext();return;
+  }
+  if(t.dataset.scale!==undefined){
+    const item=ITEMS[state.idx];if(!item||item.kind!=='s'||isAnswered(item)) return;
+    state.scales[item.id]=parseInt(t.dataset.scale,10);saveLocal();saveRemote();renderQuiz();focusNext();return;
+  }
+  const act=t.dataset.act;if(!act) return;
+  if(act==='start'){
+    const u=firstUnanswered();
+    if(u===-1){state.stage='done';}else{state.stage='q';state.idx=u;}
+    renderQuiz();window.scrollTo(0,0);
+  }else if(act==='next'){
+    if(state.idx<ITEMS.length-1){state.idx++;state.stage='q';}else{state.stage='done';}
+    renderQuiz();window.scrollTo(0,0);
+  }else if(act==='prev'){
+    state.idx=Math.max(0,state.idx-1);renderQuiz();window.scrollTo(0,0);
+  }else if(act==='review-all'){
+    state.stage='q';state.idx=0;renderQuiz();window.scrollTo(0,0);
+  }else if(act==='again'){
+    state.answers={};state.scales={};saveLocal();deleteRemote();state.stage='start';state.idx=0;renderQuiz();window.scrollTo(0,0);
+  }else if(act==='reset1'){state.resetStep=1;renderTeacher();}
+  else if(act==='reset0'){state.resetStep=0;renderTeacher();}
+  else if(act==='reset2'){doReset();}
+});
+
+initCaps();
+})();
+</script>
+</body>
+</html>
